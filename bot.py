@@ -3,7 +3,6 @@ import os
 import telebot
 import time
 import random
-import info
 import threading
 from telebot import types
 from pymongo import MongoClient
@@ -667,7 +666,7 @@ def givegoldd(m):
 
      
 @bot.message_handler(commands=['buyruby'])
-def traderuby(m):
+def buyruby_handler(m):
     user = users.find_one({'id':m.from_user.id})
     if not user:
         bot.reply_to(m, 'Вы не зарегистрированы в боте. Напишите в чат хоть что нибудь (не команду).')
