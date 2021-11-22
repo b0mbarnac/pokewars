@@ -371,23 +371,8 @@ def unbannn(id):
       except:
            pass
 
-pokemonlist=['dildak','loshod','penis','zaluper','pikachu','pedro','bulbazaur','mayt','psyduck','zhopa','moxnatka','charmander',
-            'diglet','golem','sidot','traxer', 'pizdak','tyxlomon','morzh','penisdetrov','gandonio','spermostrel','yebator','egg',
-            'graveler','tirog','eldro4illo','vyper','sizor','myavs','bulatpidor','ebusobak','slagma','pupa','lupa']
-
-basepokes=['dildak','loshod','penis','zaluper','zhopa','sidot']
-
-elita=['pikachu','pedro','bulbazaur','psyduck', 'moxnatka','charmander','diglet','golem','sidot','traxer','tyxlomon','morzh',
-       'penisdetrov','gandonio','spermostrel','yebator','egg','graveler','tirog','eldro4illo','vyper','sizor','myavs','bulatpidor','ebusobak',
-      'slagma','pupa','lupa']
-
-elitaweak=['moxnatka','diglet','traxer','penis','gandonio','egg','sizor','ebusobak','ultrapoke']
-
-rubypokes=['rubenis','crystaler','blyadomon','moldres','pupitar','aron','sfil']
-
-
-
-pokemons={'dildak':{'cool':10,
+pokemons={
+          'dildak':{'cool':10,
                    'name':'Дилдак'},
           'loshod':{'cool':25,
                    'name':'Лошод'},
@@ -479,7 +464,6 @@ pokemons={'dildak':{'cool':10,
                    'name':'Ультрапокес'},
           'pasyuk':{'cool':100,
                    'name':'Пасюк'}
-                   
 }
 
 rubypokemons={
@@ -504,10 +488,18 @@ rubypokemons={
     'sfil':{'cool':1000000,
               'name':'Сфил',
               'cost':13000},
-
-
 }
 
+pokemonlist = pokemons.keys()
+basepokes=['dildak','loshod','penis','zaluper','zhopa','sidot']
+
+elita=['pikachu','pedro','bulbazaur','psyduck', 'moxnatka','charmander','diglet','golem','sidot','traxer','tyxlomon','morzh',
+       'penisdetrov','gandonio','spermostrel','yebator','egg','graveler','tirog','eldro4illo','vyper','sizor','myavs','bulatpidor','ebusobak',
+      'slagma','pupa','lupa']
+
+elitaweak=['moxnatka','diglet','traxer','penis','gandonio','egg','sizor','ebusobak','ultrapoke']
+
+rubypokes=['rubenis','crystaler','blyadomon','moldres','pupitar','aron','sfil']
 
 @bot.message_handler(commands=['evolve'])
 def evolve(m):
@@ -673,29 +665,33 @@ def givegoldd(m):
     except:
         pass
 
-
      
 @bot.message_handler(commands=['buyruby'])
 def traderuby(m):
-    x=users.find_one({'id':m.from_user.id})
-    if x!=None:
-        y=m.text.split(' ')
-        if len(y)==2:
-            try:
-              ruby=int(y[1])
-              if ruby>0:
-                i=ruby*100000
-                if x['money']>=i:
-                    users.update_one({'id':m.from_user.id},{'$inc':{'money':-i}})
-                    users.update_one({'id':m.from_user.id},{'$inc':{'ruby':ruby}})
-                    bot.send_message(m.chat.id, 'Вы успешно обменяли '+str(int(i/1000))+'к золота на '+str(ruby)+' рубин(ов)!')
-                else:
-                    bot.send_message(m.chat.id, 'Недостаточно золота! (курс: 100к золота за 1 рубин).')
-              else:
-                  bot.send_message(m.chat.id, 'Введите число больше нуля!')
-            except:
-                 bot.send_message(m.chat.id, 'Неверный формат!')
-
+    user = users.find_one({'id':m.from_user.id})
+    if not user:
+        bot.reply_to(m, 'Вы не зарегистрированы в боте. Напишите в чат хоть что нибудь (не команду).')
+        # везде убрать нахуй это сообщение - пусть регистрирует
+        return
+    if m.text.count(' ') != 2:
+        bot.reply_to(m, 'Неверный формат!')
+        return      
+    count = m.text.split(' ')[1]
+    if not count.isdigit():
+        bot.reply_to(m, 'Неверный формат!')
+        return
+    count = int(count)
+    if ruby<=0:
+        bot.reply_to(m, 'Введите число больше нуля!')
+        return
+    price = count*100000
+    if user['money'] < price:
+        bot.reply_to(m, 'Недостаточно золота! (курс: 100к золота за 1 рубин).')
+        return
+    users.update_one({'id':m.from_user.id},{'$inc':{'money':-i}})
+    users.update_one({'id':m.from_user.id},{'$inc':{'ruby':ruby}})
+    bot.send_message(m.chat.id, 'Вы успешно обменяли '+str(int(i/1000))+'к золота на '+str(ruby)+' рубин(ов)!')
+            
 
 @bot.message_handler(commands=['pokeshop'])
 def pokeshopp(m):
